@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Teste de Mira</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        .alvo {
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            cursor: pointer;
+        }
+
+        #pontuacao {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+        }
+
+        #cronometro {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+        }
+
+        #fimDeJogo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="pontuacao">Pontuação: 0</div>
+    <div id="cronometro">Tempo: 30</div>
+    <div id="fimDeJogo"></div>
+
+    <script>
+        const pontuacaoElemento = document.getElementById("pontuacao");
+        const cronometroElemento = document.getElementById("cronometro");
+        const fimDeJogoElemento = document.getElementById("fimDeJogo");
+        let pontuacao = 0;
+        let tempoRestante = 30; // Tempo de jogo em segundos
+
+        function criarAlvo() {
+            const alvo = document.createElement("div");
+            alvo.classList.add("alvo");
+
+            const larguraJanela = window.innerWidth;
+            const alturaJanela = window.innerHeight;
+
+            const posX = Math.floor(Math.random() * (larguraJanela - 50));
+            const posY = Math.floor(Math.random() * (alturaJanela - 50));
+
+            alvo.style.left = `${posX}px`;
+            alvo.style.top = `${posY}px`;
+
+            document.body.appendChild(alvo);
+
+            alvo.addEventListener("click", function() {
+                pontuacao++;
+                pontuacaoElemento.textContent = `Pontuação: ${pontuacao}`;
+                alvo.remove();
+                criarAlvo();
+            });
+
+            setTimeout(() => {
+                if (document.body.contains(alvo)) {
+                    alvo.remove();
+                    criarAlvo();
+                }
+            }, 1000);
+        }
+
+        function atualizarCronometro() {
+            cronometroElemento.textContent = `Tempo: ${tempoRestante}`;
+            tempoRestante--;
+
+            if (tempoRestante < 0) {
+                clearInterval(cronometroInterval);
+                fimDeJogo();
+            }
+        }
+
+        function fimDeJogo() {
+            const alvos = document.querySelectorAll(".alvo");
+            alvos.forEach(alvo => alvo.remove());
+            fimDeJogoElemento.textContent = `Fim de Jogo! Pontuação Final: ${pontuacao}`;
+            fimDeJogoElemento.style.display = "block";
+        }
+
+        const cronometroInterval = setInterval(atualizarCronometro, 1000);
+
+        criarAlvo();
+    </script>
+
+</body>
+</html>
